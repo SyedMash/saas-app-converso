@@ -29,3 +29,8 @@ interface Companion {
     duration: number;
     author: string;
 }
+
+interface SavedMessage {
+    role: "user" | "system" | "assistant";
+    content: string;
+}

@@ -1,7 +1,8 @@
 import {getCompanion} from "@/lib/actions/companion.action";
 import Image from "next/image";
-import React from "react";
 import LiveSession from "@/components/LiveSession";
+import {currentUser} from "@clerk/nextjs/server";
+import {redirect} from "next/navigation";
 
 interface CompanionIdProps {
     params: Promise<{ companionId: string }>
@@ -9,8 +10,12 @@ interface CompanionIdProps {
 
 const page = async ({params}: CompanionIdProps) => {
     const {companionId} = await params
-    const companion: Companion = await getCompanion((companionId))
-    const {name, subject, id, created_at, style, topic, voice, duration, author} = companion
+    const companion: Companion = await getCompanion(companionId)
+    const {name, voice, subject, topic, duration, id, style} = companion
+    const user = await currentUser()
+
+    if (!user) redirect("/sign-in")
+    if (!companion) redirect("/companion-library")
 
     return (
         <div className="bg-gray-50 min-h-[calc(100dvh-80px)] w-dvw">
@@ -32,7 +37,8 @@ const page = async ({params}: CompanionIdProps) => {
                     </div>
                     <p className={"absolute top-5 right-5 font-semibold hidden md:block"}>{duration} mins</p>
                 </div>
-                <LiveSession name={name}/>
+                <LiveSession name={name} subject={subject} userName={user.fullName!} userImageUrl={user.imageUrl!}
+                             companionId={id} topic={topic} style={style} voice={voice} userId={user.id}/>
             </div>
         </div>
     );

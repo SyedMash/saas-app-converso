@@ -27,6 +27,7 @@ import {subjects} from "@/constants";
 import {Textarea} from "./ui/textarea";
 import {createCompanion} from "@/lib/actions/companion.action";
 import {redirect} from "next/navigation";
+import {toast} from "sonner";
 
 const CompanionForm = () => {
     const form = useForm<z.infer<typeof formSchema>>({
@@ -45,6 +46,9 @@ const CompanionForm = () => {
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
         const newCompanion = await createCompanion(values);
         if (newCompanion) {
+            toast("Companion created successfully.", {
+                description: `Companion name: ${newCompanion.name}`,
+            });
             redirect(`/companion/${newCompanion.id}`);
         } else {
             console.log("failed to create new companion");

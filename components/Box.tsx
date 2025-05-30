@@ -45,7 +45,7 @@ const Box = ({duration, subject, name, topic, color, id}: BoxProps) => {
             </div>
             <div className="space-y-4 mt-6">
                 <h1>{name}</h1>
-                <p>Topic: {topic}</p>
+                <p className={"line-clamp-1"}>Topic: {topic}</p>
                 <p>🕛 {duration} mins duration</p>
             </div>
             <Link href={`/companion/${id}`}>

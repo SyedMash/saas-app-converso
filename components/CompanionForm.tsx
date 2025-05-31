@@ -31,11 +31,9 @@ import {validateInstructions} from "@/lib/actions/gemini.action";
 import {useState} from "react";
 import {cn} from "@/lib/utils";
 
-
 const CompanionForm = () => {
     const [message, setMessage] = useState<GeminiReply>({success: false, message: ""});
     const [loading, setLoading] = useState(false);
-
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -48,7 +46,6 @@ const CompanionForm = () => {
             duration: 15,
         },
     });
-
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
@@ -75,7 +72,6 @@ const CompanionForm = () => {
             setLoading(false);
             return
         }
-
     };
 
     return (

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
     Form,
     FormControl,
@@ -10,7 +9,6 @@ import {
     FormMessage,
 } from "./ui/form";
 import {useForm} from "react-hook-form";
-import {formSchema} from "../schema";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "./ui/input";
@@ -28,8 +26,17 @@ import {Textarea} from "./ui/textarea";
 import {createCompanion} from "@/lib/actions/companion.action";
 import {redirect} from "next/navigation";
 import {toast} from "sonner";
+import {formSchema} from "@/schema";
+import {validateInstructions} from "@/lib/actions/gemini.action";
+import {useState} from "react";
+import {cn} from "@/lib/utils";
+
 
 const CompanionForm = () => {
+    const [message, setMessage] = useState<GeminiReply>({success: false, message: ""});
+    const [loading, setLoading] = useState(false);
+
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -44,16 +51,31 @@ const CompanionForm = () => {
 
 
     const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-        const newCompanion = await createCompanion(values);
-        if (newCompanion) {
-            toast("Companion created successfully.", {
-                description: `Companion name: ${newCompanion.name}`,
-            });
-            redirect(`/companion/${newCompanion.id}`);
+        setLoading(true);
+        const validationOfInstruction = await validateInstructions(values.subject, values.topic)
+
+        const parsedValidation: GeminiReply = JSON.parse(validationOfInstruction)
+
+        setMessage({success: parsedValidation.success, message: parsedValidation.message})
+
+        if (parsedValidation.success) {
+            const newCompanion = await createCompanion(values);
+            if (newCompanion) {
+                toast("Companion created successfully.", {
+                    description: `Companion name: ${newCompanion.name}`,
+                });
+                setLoading(false)
+                redirect(`/companion/${newCompanion.id}`);
+            } else {
+                console.log("failed to create new companion");
+                setLoading(false)
+                redirect(`/`);
+            }
         } else {
-            console.log("failed to create new companion");
-            redirect(`/`);
+            setLoading(false);
+            return
         }
+
     };
 
     return (
@@ -127,6 +149,7 @@ const CompanionForm = () => {
                                         className="input"
                                     />
                                 </FormControl>
+                                {!message.success && <p className={"text-red-600"}>{message.message}</p>}
                                 <FormMessage/>
                             </FormItem>
                         )}
@@ -202,8 +225,9 @@ const CompanionForm = () => {
                         )}
                     />
 
-                    <Button type="submit" className="cursor-pointer w-full">
-                        Build Your Companion
+                    <Button type="submit" className={cn("cursor-pointer w-full", loading && "animate-pulse")}
+                            disabled={loading}>
+                        {loading ? "Validation instructions..." : "Build Your Companion"}
                     </Button>
                 </form>
             </Form>

@@ -1,17 +1,21 @@
 import Box from "@/components/Box";
 import List from "@/components/List";
-import {recentLessons, recentSessions} from "@/constants";
+import {recentLessons} from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
+import {getAllCompanions} from "@/lib/actions/companion.action";
+import {getSubjectColor} from "@/lib/utils";
 
-export default function Home() {
+export default async function Home() {
+    const companions: Companion[] = await getAllCompanions({limit: 3})
+
     return (
         <main className="bg-gray-50 min-h-dvh w-dvw">
             <div className="custom-width overflow-hidden">
                 <h1 className="mt-6">Dashboard</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
-                    {recentSessions.map((session, idx: number) => (
-                        <Box key={idx} {...session} />
+                    {companions.map((companion) => (
+                        <Box key={companion.id} {...companion} color={getSubjectColor(companion.subject)}/>
                     ))}
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 mt-6 gap-6">

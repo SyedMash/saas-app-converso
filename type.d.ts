@@ -34,3 +34,8 @@ interface SavedMessage {
     role: "user" | "system" | "assistant";
     content: string;
 }
+
+interface GeminiReply {
+    success: boolean
+    message: string
+}

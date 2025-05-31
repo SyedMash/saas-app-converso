@@ -7,7 +7,7 @@ import {vapi} from "@/lib/vapi.sdk";
 import {cn, configureAssistant} from "@/lib/utils";
 import Lottie, {LottieRefCurrentProps} from "lottie-react";
 import soundwaves from "@/constants/soundwaves.json"
-import {saveSession} from "@/lib/actions/companion.action";
+import {saveSession} from "@/lib/actions/session.action";
 import {toast} from "sonner";
 import {useRouter} from "next/navigation";
 

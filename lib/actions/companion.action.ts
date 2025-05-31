@@ -56,11 +56,13 @@ export const getCompanion = async (id: string) => {
     return companion[0];
 }
 
-export const saveSession = async (userId: string, companionId: string) => {
+
+export const getCompanionsByUserId = async (userId: string) => {
     const supabase = await createSupabaseClient()
-    const {error} = await supabase.from("session_history").insert({user_id: userId, companion_id: companionId}).select()
 
-    if (error) throw new Error(`${error.message}`);
+    const {data, error} = await supabase.from("companions").select("*").eq("author", userId)
 
-    return {success: true, message: "Session saved successfully."};
+    if (error || !data) throw new Error(`No companion found, ${error?.message}`);
+
+    return data
 }

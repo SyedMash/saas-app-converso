@@ -2,6 +2,7 @@
 
 import {auth} from "@clerk/nextjs/server";
 import {createSupabaseClient} from "../supabase";
+import {revalidatePath} from "next/cache";
 
 export const createCompanion = async (data: createCompanion) => {
     const {userId: author} = await auth();
@@ -65,4 +66,24 @@ export const getCompanionsByUserId = async (userId: string) => {
     if (error || !data) throw new Error(`No companion found, ${error?.message}`);
 
     return data
+}
+
+export const deleteCompaion = async ({companionId}: { companionId: string }) => {
+    const {userId} = await auth()
+    const supabase = await createSupabaseClient()
+
+    const {data, error} = await supabase.from("companions").select("author").eq("id", companionId)
+    if (error || !data) throw new Error(`No companion found, ${error?.message}`);
+
+    const {author} = data[0]
+
+    if (userId !== author) {
+        return {success: false, message: "You are not the owner"}
+    }
+
+    const {error: deleteError} = await supabase.from("companions").delete().eq("id", companionId)
+    if (deleteError) throw new Error(`${deleteError.message}`);
+
+    revalidatePath("/", "layout")
+    return {success: true, message: "Companion deleted successfully."};
 }

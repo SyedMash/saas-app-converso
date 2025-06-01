@@ -4,6 +4,9 @@ import clsx from "clsx";
 import Image from "next/image";
 import React, {useState} from "react";
 import Link from "next/link";
+import {Trash2} from "lucide-react"
+import {deleteCompaion} from "@/lib/actions/companion.action";
+import {toast} from "sonner";
 
 interface BoxProps {
     id: string
@@ -27,6 +30,15 @@ const Box = ({duration, subject, name, topic, color, id}: BoxProps) => {
         }
     };
 
+    const handleCompanionDelete = async () => {
+        const deletedCompanion = await deleteCompaion({companionId: id})
+        if (deletedCompanion.success) {
+            toast("Company deleted successfully");
+        } else {
+            toast(deletedCompanion.message)
+        }
+    }
+
     return (
         <div
             className={clsx("min-h-72 rounded-3xl p-6 border-2 border-black")}
@@ -36,12 +48,17 @@ const Box = ({duration, subject, name, topic, color, id}: BoxProps) => {
                 <div className="bg-black text-white flex items-center justify-center rounded-xl py-1 px-4 capitalize">
                     {subject}
                 </div>
-                <button
-                    className="bg-black p-2 rounded-lg cursor-pointer"
-                    onClick={handleBookMark}
-                >
-                    <Image src={bookmark} alt="bookmark" width={14} height={14}/>
-                </button>
+                <div className={"flex items-center gap-2"}>
+                    <button
+                        className="bg-black p-2 rounded-lg cursor-pointer"
+                        onClick={handleBookMark}
+                    >
+                        <Image src={bookmark} alt="bookmark" width={14} height={14}/>
+                    </button>
+                    <button className={"cursor-pointer"} onClick={handleCompanionDelete}>
+                        <Trash2/>
+                    </button>
+                </div>
             </div>
             <div className="space-y-4 mt-6">
                 <h1>{name}</h1>

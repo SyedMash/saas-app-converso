@@ -1,11 +1,10 @@
 import List from "@/components/List";
-import {recentLessons} from "@/constants";
 import Image from "next/image";
-import React from "react";
 import {currentUser} from "@clerk/nextjs/server";
 import {redirect} from "next/navigation";
 import {getCompanionsByUserId} from "@/lib/actions/companion.action";
 import {getUserSessions} from "@/lib/actions/session.action";
+import {getSubjectColor} from "@/lib/utils";
 
 interface DetailsBoxProps {
     icon: string;
@@ -65,7 +64,7 @@ const page = async () => {
                     </div>
                 </div>
                 <div className="rounded-xl border-2 p-6 mt-6">
-                    <h1>Completed lessons</h1>
+                    <h1>Your completed lessons</h1>
                     <div className="hidden md:flex items-center justify-between mt-6">
                         <p className="">Lessons</p>
                         <div className="flex items-center gap-24">
@@ -75,8 +74,8 @@ const page = async () => {
                     </div>
 
                     <div className="mt-6 flex flex-col gap-6">
-                        {recentLessons.map((lesson) => (
-                            <List key={lesson.id} {...lesson} />
+                        {userSessions.map((session) => (
+                            <List key={session.id} {...session} color={getSubjectColor(session.subject)}/>
                         ))}
                     </div>
                 </div>

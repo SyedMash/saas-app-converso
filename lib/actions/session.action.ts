@@ -13,9 +13,24 @@ export const saveSession = async (userId: string, companionId: string) => {
 
 export const getUserSessions = async (userid: string) => {
     const supabase = await createSupabaseClient()
-    const {data, error} = await supabase.from("session_history").select().eq("user_id", userid)
+    const {
+        data,
+        error
+    } = await supabase.from("session_history").select("companions:companion_id (*)").eq("user_id", userid)
 
     if (error || !data) throw new Error(`User sessions not found, ${error?.message}`);
 
-    return data
+    return data.map(({companions}) => companions)
+}
+
+export const getRecentSessions = async (limit: number) => {
+    const supabase = await createSupabaseClient()
+    const {
+        data,
+        error
+    } = await supabase.from("session_history").select("companions:companion_id (*)").limit(limit)
+
+    if (error || !data) throw new Error(`User sessions not found, ${error?.message}`);
+
+    return data.map(({companions}) => companions)
 }

@@ -1,13 +1,17 @@
 import Box from "@/components/Box";
 import List from "@/components/List";
-import {recentLessons} from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
 import {getAllCompanions} from "@/lib/actions/companion.action";
 import {getSubjectColor} from "@/lib/utils";
+import {getRecentSessions} from "@/lib/actions/session.action";
 
 export default async function Home() {
     const companions: Companion[] = await getAllCompanions({limit: 3})
+    const recentSessions: Companion[] = await getRecentSessions(10)
+
+    console.log(recentSessions)
+
 
     return (
         <main className="bg-gray-50 min-h-dvh w-dvw">
@@ -18,9 +22,9 @@ export default async function Home() {
                         <Box key={companion.id} {...companion} color={getSubjectColor(companion.subject)}/>
                     ))}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 mt-6 gap-6">
-                    <div className="md:col-span-2 rounded-xl border-2 p-6">
-                        <h1>Recently completed lessons</h1>
+                <div className="grid grid-cols-1 md:grid-cols-3 mt-6 gap-6 ">
+                    <div className="md:col-span-2 rounded-xl border-2 p-6 h-fit">
+                        <h1>Recent Sessions</h1>
                         <div className="hidden md:flex items-center justify-between mt-6">
                             <p className="">Lessons</p>
                             <div className="flex items-center gap-24">
@@ -29,8 +33,8 @@ export default async function Home() {
                             </div>
                         </div>
                         <div className="mt-6 flex flex-col gap-6">
-                            {recentLessons.map((lesson) => (
-                                <List key={lesson.id} {...lesson} />
+                            {recentSessions.map((session) => (
+                                <List key={session.id} {...session} color={getSubjectColor(session.subject)}/>
                             ))}
                         </div>
                     </div>

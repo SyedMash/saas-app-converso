@@ -145,7 +145,8 @@ const CompanionForm = () => {
                                         className="input"
                                     />
                                 </FormControl>
-                                {!message.success && <p className={"text-red-600"}>{message.message}</p>}
+                                {!message.success &&
+                                    <p className={"text-red-500 capitalize font-semibold"}>{message.message}</p>}
                                 <FormMessage/>
                             </FormItem>
                         )}
@@ -220,7 +221,6 @@ const CompanionForm = () => {
                             </FormItem>
                         )}
                     />
-
                     <Button type="submit" className={cn("cursor-pointer w-full", loading && "animate-pulse")}
                             disabled={loading}>
                         {loading ? "Validation instructions..." : "Build Your Companion"}
